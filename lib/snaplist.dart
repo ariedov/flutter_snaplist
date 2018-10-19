@@ -3,12 +3,13 @@ library snaplist;
 import 'package:flutter/widgets.dart';
 
 class SnapList extends StatefulWidget {
+  final SeparatorSizeProvider separatorProvider;
   final CardSizeProvider sizeProvider;
   final CardBuilder builder;
-  final double separatorWidth;
   final int count;
 
   final ScrollProgressUpdate progressUpdate;
+  final PositionUpdate positionUpdate;
 
   final EdgeInsets padding;
 
@@ -16,14 +17,15 @@ class SnapList extends StatefulWidget {
     Key key,
     @required this.sizeProvider,
     @required this.builder,
-    @required this.separatorWidth,
+    @required this.separatorProvider,
     @required this.count,
     this.padding,
     this.progressUpdate,
+    this.positionUpdate,
   }) : super(key: key) {
     assert(this.sizeProvider != null);
     assert(this.builder != null);
-    assert(this.separatorWidth != null);
+    assert(this.separatorProvider != null);
     assert(this.count != null);
   }
 
@@ -64,6 +66,7 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
                 _viewModel.nextItemPosition = -1;
                 _viewModel.scrollProgress = 0.0;
 
+                _updatePosition();
                 _updateProgress();
               }
             });
@@ -76,6 +79,7 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
   void didUpdateWidget(SnapList oldWidget) {
     if (_viewModel.centerItemPosition >= widget.count - 1) {
       _viewModel.centerItemPosition = widget.count - 1;
+      _updatePosition();
     }
 
     super.didUpdateWidget(oldWidget);
@@ -104,7 +108,7 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
         controller: _controller,
         separatorBuilder: (context, index) {
           return SizedBox(
-            width: widget.separatorWidth,
+            width: widget.separatorProvider(_createBuilderData(index)).width,
           );
         },
         itemBuilder: (context, index) {
@@ -165,6 +169,12 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
         _viewModel.nextItemPosition, _viewModel.scrollProgress);
   }
 
+  _updatePosition() {
+    if (widget.positionUpdate != null) {
+      widget.positionUpdate(_viewModel.centerItemPosition);
+    }
+  }
+
   _updateProgress() {
     if (widget.progressUpdate != null) {
       widget.progressUpdate(_viewModel.scrollProgress,
@@ -199,7 +209,7 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
 
       result += cardWidth;
 
-      result += widget.separatorWidth;
+      result += widget.separatorProvider(_createBuilderData(i - 1)).width;
     }
     return result;
   }
@@ -227,6 +237,7 @@ typedef Widget CardBuilder(
 );
 
 typedef Size CardSizeProvider(BuilderData data);
+typedef Size SeparatorSizeProvider(BuilderData data);
 
 class BuilderData {
   final int current;
@@ -237,4 +248,5 @@ class BuilderData {
   BuilderData(this.current, this.center, this.next, this.progress);
 }
 
-typedef double ScrollProgressUpdate(double progress, int center, int next);
+typedef void ScrollProgressUpdate(double progress, int center, int next);
+typedef void PositionUpdate(int center);
