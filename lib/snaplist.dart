@@ -12,6 +12,8 @@ class SnapList extends StatefulWidget {
   final PositionUpdate positionUpdate;
   final ScrollStart scrollStart;
 
+  final AnimationController snipAnimation;
+
   final EdgeInsets padding;
 
   SnapList({
@@ -24,6 +26,7 @@ class SnapList extends StatefulWidget {
     this.progressUpdate,
     this.positionUpdate,
     this.scrollStart,
+    this.snipAnimation,
   }) : super(key: key) {
     assert(this.sizeProvider != null);
     assert(this.builder != null);
@@ -47,8 +50,8 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    _snipController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 300))
+    _snipController = (widget.snipAnimation ??
+        AnimationController(vsync: this, duration: Duration(milliseconds: 300)))
           ..addListener(() {
             setState(() {
               _viewModel.scrollProgress =
