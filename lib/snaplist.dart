@@ -10,6 +10,7 @@ class SnapList extends StatefulWidget {
 
   final ScrollProgressUpdate progressUpdate;
   final PositionUpdate positionUpdate;
+  final ScrollStart scrollStart;
 
   final EdgeInsets padding;
 
@@ -22,6 +23,7 @@ class SnapList extends StatefulWidget {
     this.padding,
     this.progressUpdate,
     this.positionUpdate,
+    this.scrollStart,
   }) : super(key: key) {
     assert(this.sizeProvider != null);
     assert(this.builder != null);
@@ -128,6 +130,10 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
     _viewModel.scrollProgress = 0.0;
 
     _viewModel.dragStartPosition = details.globalPosition.dx;
+
+    if (widget.scrollStart != null) {
+      widget.scrollStart();
+    }
   }
 
   void _onHorizontalUpdate(DragUpdateDetails details) {
@@ -248,5 +254,6 @@ class BuilderData {
   BuilderData(this.current, this.center, this.next, this.progress);
 }
 
+typedef ScrollStart();
 typedef void ScrollProgressUpdate(double progress, int center, int next);
 typedef void PositionUpdate(int center);
