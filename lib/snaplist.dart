@@ -8,10 +8,6 @@ class SnapList extends StatefulWidget {
   final double separatorWidth;
   final int count;
 
-  final GestureDragStartCallback verticalStart;
-  final GestureDragUpdateCallback verticalUpdate;
-  final GestureDragEndCallback verticalEnd;
-
   final ScrollProgressUpdate progressUpdate;
 
   final EdgeInsets padding;
@@ -23,9 +19,6 @@ class SnapList extends StatefulWidget {
     @required this.separatorWidth,
     @required this.count,
     this.padding,
-    this.verticalStart,
-    this.verticalUpdate,
-    this.verticalEnd,
     this.progressUpdate,
   }) : super(key: key) {
     assert(this.sizeProvider != null);
@@ -95,9 +88,6 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
     }
 
     return GestureDetector(
-      onVerticalDragStart: widget.verticalStart,
-      onVerticalDragUpdate: widget.verticalUpdate,
-      onVerticalDragEnd: widget.verticalEnd,
       onHorizontalDragStart: _onHorizontalStart,
       onHorizontalDragUpdate: _onHorizontalUpdate,
       onHorizontalDragEnd: _onHorizontalEnd,
