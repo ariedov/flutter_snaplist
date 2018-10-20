@@ -161,6 +161,12 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
         itemCount: widget.count);
   }
 
+  @override
+    void dispose() {
+      bloc.dispose();
+      super.dispose();
+    }
+
   void _onHorizontalStart(DragStartDetails details) {
     bloc.swipeStartSink
         .add(StartEvent(_controller.offset, details.globalPosition.dx));
@@ -178,7 +184,6 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
   void _onHorizontalEnd(DragEndDetails details) {
     bloc.swipeEndSink.add(EndEvent());
   }
-
   bool get isAnimating => _snipController.isAnimating;
 }
 
