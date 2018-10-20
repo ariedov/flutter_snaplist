@@ -1,9 +1,9 @@
 # snaplist
 
-A new flutter package project.
+A small cozy library that allows you to make snappable list views.
 
-## Getting Started
+Snaplist supports different and even dynamically sized childs to be listed and correctly snapped.
 
-For help getting started with Flutter, view our online [documentation](https://flutter.io/).
+## Showcase 
 
-For help on editing package code, view the [documentation](https://flutter.io/developing-packages/).
+![](https://media.giphy.com/media/27bTHalyweVoc2psS2/giphy.gif)
