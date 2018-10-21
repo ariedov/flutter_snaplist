@@ -18,6 +18,7 @@ class SnapList extends StatefulWidget {
   final AnimationController snipAnimation;
 
   final EdgeInsets padding;
+  final Alignment alignment;
 
   SnapList({
     Key key,
@@ -30,6 +31,7 @@ class SnapList extends StatefulWidget {
     this.positionUpdate,
     this.scrollStart,
     this.snipAnimation,
+    this.alignment = Alignment.center,
   }) : super(key: key) {
     assert(this.sizeProvider != null);
     assert(this.builder != null);
@@ -151,7 +153,7 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
         },
         itemBuilder: (context, index) {
           return Align(
-            alignment: Alignment.center,
+            alignment: widget.alignment,
             child: widget.builder(
               context,
               BuilderData(index, center, next, progress),
