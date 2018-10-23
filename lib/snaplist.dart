@@ -148,15 +148,22 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
         controller: _controller,
         separatorBuilder: (context, index) {
           return SizedBox(
-            width: widget.separatorProvider(BuilderData(index, center, next, progress)).width,
+            width: widget
+                .separatorProvider(BuilderData(index, center, next, progress))
+                .width,
           );
         },
         itemBuilder: (context, index) {
+          final builderData = BuilderData(index, center, next, progress);
+          final size = widget.sizeProvider(builderData);
           return Align(
             alignment: widget.alignment,
-            child: widget.builder(
-              context,
-              BuilderData(index, center, next, progress),
+            child: SizedBox.fromSize(
+              size: size,
+              child: widget.builder(
+                context,
+                builderData,
+              ),
             ),
           );
         },
@@ -164,10 +171,10 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
   }
 
   @override
-    void dispose() {
-      bloc.dispose();
-      super.dispose();
-    }
+  void dispose() {
+    bloc.dispose();
+    super.dispose();
+  }
 
   void _onHorizontalStart(DragStartDetails details) {
     bloc.swipeStartSink
@@ -186,6 +193,7 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
   void _onHorizontalEnd(DragEndDetails details) {
     bloc.swipeEndSink.add(EndEvent());
   }
+
   bool get isAnimating => _snipController.isAnimating;
 }
 
