@@ -15,7 +15,8 @@ class SnapList extends StatefulWidget {
   final PositionUpdate positionUpdate;
   final ScrollStart scrollStart;
 
-  final AnimationController snipAnimation;
+  final Duration snipDuration;
+  final Curve snipCurve;
 
   final EdgeInsets padding;
   final Alignment alignment;
@@ -30,7 +31,8 @@ class SnapList extends StatefulWidget {
     this.progressUpdate,
     this.positionUpdate,
     this.scrollStart,
-    this.snipAnimation,
+    this.snipDuration,
+    this.snipCurve,
     this.alignment = Alignment.center,
   }) : super(key: key) {
     assert(this.sizeProvider != null);
@@ -77,12 +79,18 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
       _snipController.forward(from: 0.0);
     });
 
-    _snipController = (widget.snipAnimation ??
-        AnimationController(vsync: this, duration: Duration(milliseconds: 300)))
+    _snipController = AnimationController(
+        vsync: this,
+        duration: widget.snipDuration ?? Duration(milliseconds: 300))
       ..addListener(() {
         setState(() {
-          final scrollProgress = _progressTween.evaluate(_snipController);
-          final snip = _snipTween.evaluate(_snipController);
+          Animation resultAnimation = _snipController;
+          if (widget.snipCurve != null) {
+            resultAnimation = CurvedAnimation(
+                parent: _snipController, curve: widget.snipCurve);
+          }
+          final scrollProgress = _progressTween.evaluate(resultAnimation);
+          final snip = _snipTween.evaluate(resultAnimation);
           bloc.snipUpdateSink.add(SnipUpdateEvent(snip, scrollProgress));
         });
       })
@@ -173,6 +181,8 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
   @override
   void dispose() {
     bloc.dispose();
+    _controller.dispose();
+    _snipController.dispose();
     super.dispose();
   }
 
