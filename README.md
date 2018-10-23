@@ -2,6 +2,8 @@
 
 A small cozy library that allows you to make snappable list views.
 
+**Issues and Pull Requests are really appreciated!**
+
 Snaplist supports different and even dynamically sized childs to be listed and correctly snapped.
 
 ## Showcase 
