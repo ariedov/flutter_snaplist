@@ -121,15 +121,14 @@ class SnapListBloc {
   _calculateScrollProgress(double currentPosition) {
     final distance = (_startPosition - currentPosition).abs();
     return ((distance * 100) /
-            sizeProvider(_createBuilderData(_centerItemPosition)).width)
+            sizeProvider(_centerItemPosition, _createBuilderData()).width)
         .clamp(0.0, 100.0);
   }
 
   double _calculateTargetOffset() {
     double result = 0.0;
     for (var i = 1; i <= _nextItemPosition; ++i) {
-      double cardWidth = sizeProvider(BuilderData(
-        i - 1,
+      double cardWidth = sizeProvider(i - 1, BuilderData(
         _centerItemPosition,
         _nextItemPosition,
         100.0,
@@ -137,14 +136,13 @@ class SnapListBloc {
 
       result += cardWidth;
 
-      result += separatorProvider(_createBuilderData(i - 1)).width;
+      result += separatorProvider(i - 1, _createBuilderData()).width;
     }
     return result;
   }
 
-  _createBuilderData(int position) {
-    return BuilderData(
-        position, _centerItemPosition, _nextItemPosition, _scrollProgress);
+  _createBuilderData() {
+    return BuilderData(_centerItemPosition, _nextItemPosition, _scrollProgress);
   }
 
   void onSwipingFinished() {

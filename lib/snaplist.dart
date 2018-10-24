@@ -83,23 +83,19 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
         vsync: this,
         duration: widget.snipDuration ?? Duration(milliseconds: 300))
       ..addListener(() {
-        setState(() {
-          Animation resultAnimation = _snipController;
-          if (widget.snipCurve != null) {
-            resultAnimation = CurvedAnimation(
-                parent: _snipController, curve: widget.snipCurve);
-          }
-          final scrollProgress = _progressTween.evaluate(resultAnimation);
-          final snip = _snipTween.evaluate(resultAnimation);
-          bloc.snipUpdateSink.add(SnipUpdateEvent(snip, scrollProgress));
-        });
+        Animation resultAnimation = _snipController;
+        if (widget.snipCurve != null) {
+          resultAnimation =
+              CurvedAnimation(parent: _snipController, curve: widget.snipCurve);
+        }
+        final scrollProgress = _progressTween.evaluate(resultAnimation);
+        final snip = _snipTween.evaluate(resultAnimation);
+        bloc.snipUpdateSink.add(SnipUpdateEvent(snip, scrollProgress));
       })
       ..addStatusListener((status) {
-        setState(() {
-          if (status == AnimationStatus.completed) {
-            bloc.snipFinishSink.add(SnipFinishEvent());
-          }
-        });
+        if (status == AnimationStatus.completed) {
+          bloc.snipFinishSink.add(SnipFinishEvent());
+        }
       });
 
     super.initState();
@@ -157,19 +153,20 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
         separatorBuilder: (context, index) {
           return SizedBox(
             width: widget
-                .separatorProvider(BuilderData(index, center, next, progress))
+                .separatorProvider(index, BuilderData(center, next, progress))
                 .width,
           );
         },
         itemBuilder: (context, index) {
-          final builderData = BuilderData(index, center, next, progress);
-          final size = widget.sizeProvider(builderData);
+          final builderData = BuilderData(center, next, progress);
+          final size = widget.sizeProvider(index, builderData);
           return Align(
             alignment: widget.alignment,
             child: SizedBox.fromSize(
               size: size,
               child: widget.builder(
                 context,
+                index,
                 builderData,
               ),
             ),
@@ -209,6 +206,7 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
 
 typedef Widget CardBuilder(
   BuildContext context,
+  int position,
   BuilderData data,
 );
 

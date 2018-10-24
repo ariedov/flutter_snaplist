@@ -10,8 +10,8 @@ void main() {
   test("full scroll test", () {
     final bloc = SnapListBloc(
         itemsCount: 10,
-        separatorProvider: (data) => Size(10.0, 10.0),
-        sizeProvider: (data) => Size(50.0, 50.0));
+        separatorProvider: (index, data) => Size(10.0, 10.0),
+        sizeProvider: (index, data) => Size(50.0, 50.0));
 
     expect(bloc.offsetStream,
         emits(OffsetMatcher(OffsetEvent(-10.0, 40.0, 0, 1))));
