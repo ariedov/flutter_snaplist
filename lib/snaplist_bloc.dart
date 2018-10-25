@@ -129,8 +129,8 @@ class SnapListBloc {
 
   _swipeNextAndCenter() {
     final tmp = _centerItemPosition;
-    _nextItemPosition = tmp;
     _centerItemPosition = _nextItemPosition;
+    _nextItemPosition = tmp;
   }
 
   _calculateScrollProgress(double currentPosition) {
