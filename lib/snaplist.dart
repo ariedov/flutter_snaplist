@@ -198,7 +198,7 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
   }
 
   void _onHorizontalEnd(DragEndDetails details) {
-    bloc.swipeEndSink.add(EndEvent());
+    bloc.swipeEndSink.add(EndEvent(details.velocity.pixelsPerSecond));
   }
 
   bool get isAnimating => _snipController.isAnimating;

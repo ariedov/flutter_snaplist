@@ -36,8 +36,10 @@ class SnapListBloc {
   StreamController<SnipFinishEvent> _snipFinishController = StreamController();
   Sink<SnipFinishEvent> get snipFinishSink => _snipFinishController.sink;
 
-  StreamController<PositionChangeEvent> _positionChangeController = StreamController();
-  Stream<PositionChangeEvent> get positionStream => _positionChangeController.stream;
+  StreamController<PositionChangeEvent> _positionChangeController =
+      StreamController();
+  Stream<PositionChangeEvent> get positionStream =>
+      _positionChangeController.stream;
 
   StreamController<OffsetEvent> _offsetController = StreamController();
   Stream<OffsetEvent> get offsetStream => _offsetController.stream;
@@ -78,15 +80,30 @@ class SnapListBloc {
       _offsetController.add(OffsetEvent(_scrollOffset, _scrollProgress,
           _centerItemPosition, _nextItemPosition));
 
-      _uiController.add(UiEvent(_centerItemPosition, _nextItemPosition, _scrollProgress));
+      _uiController.add(
+          UiEvent(_centerItemPosition, _nextItemPosition, _scrollProgress));
     });
 
     _swipeEndController.stream.listen((event) {
+      if (event.vector.dx.abs() <= 300.0) {
+        _direction = ScrollDirection.NONE;
+      }
+
+      final nextPosition = _direction == ScrollDirection.NONE
+          ? _centerItemPosition
+          : _nextItemPosition;
+      final centerPosition = _direction == ScrollDirection.NONE
+          ? _nextItemPosition
+          : _centerItemPosition;
+
+      _nextItemPosition = nextPosition;
+      _centerItemPosition = centerPosition;
+
       if (_direction != null &&
           _nextItemPosition >= 0 &&
           _nextItemPosition < _itemsCount) {
-        _snipStartController
-            .add(SnipStartEvent(_scrollOffset, _calculateTargetOffset(), _scrollProgress));
+        _snipStartController.add(SnipStartEvent(
+            _scrollOffset, _calculateTargetOffset(), _scrollProgress));
       }
     });
 
@@ -96,12 +113,12 @@ class SnapListBloc {
 
       _offsetController.add(OffsetEvent(_scrollOffset, _scrollProgress,
           _centerItemPosition, _nextItemPosition));
-      _uiController.add(UiEvent(_centerItemPosition, _nextItemPosition, _scrollProgress));
+      _uiController.add(
+          UiEvent(_centerItemPosition, _nextItemPosition, _scrollProgress));
     });
 
     _snipFinishController.stream.listen((event) {
-      _centerItemPosition =
-          _nextItemPosition.clamp(0, _itemsCount - 1);
+      _centerItemPosition = _nextItemPosition.clamp(0, _itemsCount - 1);
       _nextItemPosition = -1;
       _scrollProgress = 0.0;
 
@@ -127,12 +144,15 @@ class SnapListBloc {
 
   double _calculateTargetOffset() {
     double result = 0.0;
+
     for (var i = 1; i <= _nextItemPosition; ++i) {
-      double cardWidth = sizeProvider(i - 1, BuilderData(
-        _centerItemPosition,
-        _nextItemPosition,
-        100.0,
-      )).width;
+      double cardWidth = sizeProvider(
+          i - 1,
+          BuilderData(
+            _centerItemPosition,
+            _nextItemPosition,
+            100.0,
+          )).width;
 
       result += cardWidth;
 

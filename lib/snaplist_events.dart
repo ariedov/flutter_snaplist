@@ -1,4 +1,6 @@
 
+import 'dart:ui';
+
 class StartEvent {
   final double offset;
   final double position;
@@ -11,7 +13,11 @@ class UpdateEvent {
 
   UpdateEvent(this.position, this.delta);
 }
-class EndEvent {}
+class EndEvent {
+  final Offset vector;
+
+  EndEvent(this.vector);
+}
 
 class SnipStartEvent {
   final double offset;
