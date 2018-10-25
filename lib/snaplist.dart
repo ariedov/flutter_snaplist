@@ -20,6 +20,7 @@ class SnapList extends StatefulWidget {
 
   final EdgeInsets padding;
   final Alignment alignment;
+  final double swipeVelocity;
 
   SnapList({
     Key key,
@@ -34,6 +35,7 @@ class SnapList extends StatefulWidget {
     this.snipDuration,
     this.snipCurve,
     this.alignment = Alignment.center,
+    this.swipeVelocity = 0.0,
   }) : super(key: key) {
     assert(this.sizeProvider != null);
     assert(this.builder != null);
@@ -61,6 +63,7 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
       itemsCount: widget.count,
       sizeProvider: widget.sizeProvider,
       separatorProvider: widget.separatorProvider,
+      swipeVelocity: widget.swipeVelocity
     );
 
     bloc.offsetStream.listen((event) {
@@ -159,7 +162,6 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
         },
         itemBuilder: (context, index) {
           final builderData = BuilderData(center, next, progress);
-          print("index: $index, center: $center, next: $next, progress: $progress");
           final size = widget.sizeProvider(index, builderData);
           return Align(
             alignment: widget.alignment,

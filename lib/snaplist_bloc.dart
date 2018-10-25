@@ -6,6 +6,8 @@ import 'package:snaplist/snaplist_events.dart';
 class SnapListBloc {
   final CardSizeProvider sizeProvider;
   final SeparatorSizeProvider separatorProvider;
+  final double swipeVelocity;
+
   int _itemsCount;
 
   int _centerItemPosition = 0;
@@ -50,7 +52,11 @@ class SnapListBloc {
   StreamController<UiEvent> _uiController = StreamController();
   Stream<UiEvent> get uiStream => _uiController.stream;
 
-  SnapListBloc({int itemsCount, this.sizeProvider, this.separatorProvider}) {
+  SnapListBloc(
+      {int itemsCount,
+      this.sizeProvider,
+      this.separatorProvider,
+      this.swipeVelocity}) {
     _itemsCount = itemsCount ?? 0;
 
     _swipeStartController.stream.listen((event) {
@@ -85,7 +91,9 @@ class SnapListBloc {
     });
 
     _swipeEndController.stream.listen((event) {
-      if (event.vector.dx.abs() <= 300.0) {
+      if (swipeVelocity != 0.0 &&
+          event.vector.dx.abs() <= swipeVelocity &&
+          _scrollProgress < 50) {
         _scrollProgress = 100 - _scrollProgress;
         _swipeNextAndCenter();
         _direction = ScrollDirection.NONE;
