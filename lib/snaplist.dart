@@ -159,6 +159,7 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
         },
         itemBuilder: (context, index) {
           final builderData = BuilderData(center, next, progress);
+          print("index: $index, center: $center, next: $next, progress: $progress");
           final size = widget.sizeProvider(index, builderData);
           return Align(
             alignment: widget.alignment,

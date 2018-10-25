@@ -86,18 +86,10 @@ class SnapListBloc {
 
     _swipeEndController.stream.listen((event) {
       if (event.vector.dx.abs() <= 300.0) {
+        _scrollProgress = 100 - _scrollProgress;
+        _swipeNextAndCenter();
         _direction = ScrollDirection.NONE;
       }
-
-      final nextPosition = _direction == ScrollDirection.NONE
-          ? _centerItemPosition
-          : _nextItemPosition;
-      final centerPosition = _direction == ScrollDirection.NONE
-          ? _nextItemPosition
-          : _centerItemPosition;
-
-      _nextItemPosition = nextPosition;
-      _centerItemPosition = centerPosition;
 
       if (_direction != null &&
           _nextItemPosition >= 0 &&
@@ -133,6 +125,12 @@ class SnapListBloc {
         _positionChangeController.add(PositionChangeEvent(_centerItemPosition));
       }
     });
+  }
+
+  _swipeNextAndCenter() {
+    final tmp = _centerItemPosition;
+    _nextItemPosition = tmp;
+    _centerItemPosition = _nextItemPosition;
   }
 
   _calculateScrollProgress(double currentPosition) {

@@ -24,7 +24,7 @@ void main() {
 
     bloc.swipeStartSink.add(StartEvent(0.0, 50.0));
     bloc.swipeUpdateSink.add(UpdateEvent(30.0, 10.0));
-    bloc.swipeEndSink.add(EndEvent(Offset(50.0, 50.0)));
+    bloc.swipeEndSink.add(EndEvent(Offset(1000.0, 1000.0)));
 
     bloc.snipFinishSink.add(SnipFinishEvent());
   });
