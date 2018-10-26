@@ -16,9 +16,7 @@ In your `pubspec.yaml` root add:
 
 ```yaml
 dependencies:
-  snaplist:
-    git:
-      url: https://github.com/ariedov/flutter_snaplist.git
+  snaplist: ^0.1.2
 ```
 
 ## Include
