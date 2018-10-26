@@ -1,8 +1,8 @@
 name: snaplist
 description: A new flutter package project.
 version: 0.1.2
-author:
-homepage:
+author: David Leibovych <ariedov@gmail.com>
+homepage: https://github.com/ariedov/flutter_snaplist
 
 environment:
   sdk: ">=2.0.0-dev.68.0 <3.0.0"
