@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.3] - 26.10.2018
+  
+* Readme and organizational updates.
+
 ## [0.1.2] - 25.10.2018
   
 * Implements snapping back to original item if not enough velocity or progress
