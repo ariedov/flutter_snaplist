@@ -12,7 +12,7 @@ class SnapList extends StatefulWidget {
   final ScrollProgressUpdate progressUpdate;
   final PositionUpdate positionUpdate;
   final ScrollStart scrollStart;
-  final bool verticalScrolling;
+  final Axis axis;
 
   final Duration snipDuration;
   final Curve snipCurve;
@@ -31,7 +31,7 @@ class SnapList extends StatefulWidget {
     this.progressUpdate,
     this.positionUpdate,
     this.scrollStart,
-    this.verticalScrolling = false,
+    this.axis = Axis.horizontal,
     this.snipDuration,
     this.snipCurve,
     this.alignment = Alignment.center,
@@ -62,7 +62,7 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
     bloc = SnapListBloc(
       itemsCount: widget.count,
       sizeProvider: widget.sizeProvider,
-      isVertical: widget.verticalScrolling,
+      axis: widget.axis,
       separatorProvider: widget.separatorProvider,
       swipeVelocity: widget.swipeVelocity
     );
@@ -137,7 +137,7 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
           return _buildList(event.center, event.next, event.progress);
         }
 
-        if (widget.verticalScrolling) {
+        if (widget.axis == Axis.vertical) {
           return GestureDetector(
             onVerticalDragStart: _onVerticalStart,
             onVerticalDragUpdate: _onVerticalUpdate,
@@ -160,11 +160,11 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
     return ListView.separated(
         key: _listKey,
         padding: widget.padding,
-        scrollDirection: widget.verticalScrolling ? Axis.vertical : Axis.horizontal,
+        scrollDirection: widget.axis,
         physics: NeverScrollableScrollPhysics(),
         controller: _controller,
         separatorBuilder: (context, index) {
-          if (widget.verticalScrolling) {
+          if (widget.axis == Axis.vertical) {
             return SizedBox(
               height: widget
                   .separatorProvider(index, BuilderData(center, next, progress))

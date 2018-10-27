@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/widgets.dart';
 import 'package:snaplist/size_providers.dart';
 import 'package:snaplist/snaplist_events.dart';
 
@@ -7,7 +8,7 @@ class SnapListBloc {
   final CardSizeProvider sizeProvider;
   final SeparatorSizeProvider separatorProvider;
   final double swipeVelocity;
-  final bool isVertical;
+  final Axis axis;
 
   int _itemsCount;
 
@@ -20,6 +21,7 @@ class SnapListBloc {
   double _scrollProgress;
 
   ScrollDirection _direction = ScrollDirection.NONE;
+  bool get _isVertical => axis == Axis.vertical;
 
   StreamController<StartEvent> _swipeStartController = StreamController();
   Sink<StartEvent> get swipeStartSink => _swipeStartController.sink;
@@ -57,7 +59,7 @@ class SnapListBloc {
       {int itemsCount,
       this.sizeProvider,
       this.separatorProvider,
-      this.isVertical,
+      this.axis,
       this.swipeVelocity}) {
     _itemsCount = itemsCount ?? 0;
 
@@ -72,10 +74,10 @@ class SnapListBloc {
 
     _swipeUpdateController.stream.listen((event) {
       if (event.position < _startPosition) {
-        _direction = isVertical ? ScrollDirection.DOWN : ScrollDirection.RIGHT;
+        _direction = _isVertical ? ScrollDirection.DOWN : ScrollDirection.RIGHT;
         _nextItemPosition = _centerItemPosition + 1;
       } else {
-        _direction = isVertical ? ScrollDirection.UP : ScrollDirection.LEFT;
+        _direction = _isVertical ? ScrollDirection.UP : ScrollDirection.LEFT;
         _nextItemPosition = _centerItemPosition - 1;
       }
 
@@ -94,7 +96,8 @@ class SnapListBloc {
 
     _swipeEndController.stream.listen((event) {
       if (swipeVelocity != 0.0 &&
-          (isVertical ? event.vector.dy.abs() : event.vector.dx.abs()) <= swipeVelocity &&
+          swipeVelocity >=
+              (_isVertical ? event.vector.dy.abs() : event.vector.dx.abs()) &&
           _scrollProgress < 50) {
         _scrollProgress = 100 - _scrollProgress;
         _swipeNextAndCenter();
@@ -145,40 +148,30 @@ class SnapListBloc {
 
   _calculateScrollProgress(double currentPosition) {
     final distance = (_startPosition - currentPosition).abs();
-    double sizeFactor = isVertical ?
-      sizeProvider(_centerItemPosition, _createBuilderData()).height :
-      sizeProvider(_centerItemPosition, _createBuilderData()).width;
-    return ((distance * 100) / sizeFactor).clamp(0.0, 100.0);
+    Size cardSize = sizeProvider(_centerItemPosition, _createBuilderData());
+    return ((distance * 100) / (_isVertical ? cardSize.height : cardSize.width))
+        .clamp(0.0, 100.0);
   }
 
   double _calculateTargetOffset() {
     double result = 0.0;
 
     for (var i = 1; i <= _nextItemPosition; ++i) {
-      if (isVertical) {
-        double cardHeight = sizeProvider(
-            i - 1,
-            BuilderData(
-              _centerItemPosition,
-              _nextItemPosition,
-              100.0,
-            )).height;
+      Size cardSize = sizeProvider(
+        i - 1,
+        BuilderData(
+        _centerItemPosition,
+        _nextItemPosition,
+        100.0,
+      ));
+      Size separatorSize = separatorProvider(i - 1, _createBuilderData());
 
-        result += cardHeight;
-
-        result += separatorProvider(i - 1, _createBuilderData()).height;
+      if (_isVertical) {
+        result += cardSize.height;
+        result += separatorSize.height;
       } else {
-        double cardWidth = sizeProvider(
-            i - 1,
-            BuilderData(
-              _centerItemPosition,
-              _nextItemPosition,
-              100.0,
-            )).width;
-
-        result += cardWidth;
-
-        result += separatorProvider(i - 1, _createBuilderData()).width;
+        result += cardSize.width;
+        result += separatorSize.width;
       }
     }
     return result;
