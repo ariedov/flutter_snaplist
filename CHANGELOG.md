@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.4] - 27.10.2018
+
+* Adds a simple example to the package
+
 ## [0.1.3] - 26.10.2018
   
 * Readme and organizational updates.
