@@ -4,7 +4,7 @@ A small cozy library that allows you to make snappable list views.
 
 **Issues and Pull Requests are really appreciated!**
 
-Snaplist supports different and even dynamically sized childs to be listed and correctly snapped.
+Snaplist supports different and even dynamically sized children to be listed and correctly snapped.
 
 ## Showcase
 
@@ -41,15 +41,19 @@ Widget build(BuildContext context) {
 }
 ```
 
+## Properties
+
 There are 4 required fields:
 
-- `sizeProvider` is a provider of each widget size. The library will wrap each builded widget to a sized box of specified size. This is required so snapping calculations will work correctly.
+- `sizeProvider` is a provider of each widget size. The library will wrap each built widget to a sized box of specified size. This is required so snapping calculations will work correctly.
 - `separatorProvider` is similar to `sizeProvider`, but this size will be used to build the list separators.
 - `builder` works like a regular `Flutter` builder all of us are familiar with. It will pass you the context, current item index and some additional data.
-- `count` - child count. As in a `ListView`.
+- `count` - Children count as in a `ListView`.
 
 The `data` which is provided to each provider and the builder is a combination of three fields:
 
 - `center` - is the position which is now displayed and referenced as the center widget.
 - `next` - is the position which the user is scrolling to. It is `-1` if idle.
 - `progress` - is the scroll and snip progress. The values are from `0` to `100`.
+
+Snaplist defaults to horizontal scrolling. You can set `axis` to Axis.vertical for vertical scrolling.
