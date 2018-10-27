@@ -12,6 +12,7 @@ class SnapList extends StatefulWidget {
   final ScrollProgressUpdate progressUpdate;
   final PositionUpdate positionUpdate;
   final ScrollStart scrollStart;
+  final bool verticalScrolling;
 
   final Duration snipDuration;
   final Curve snipCurve;
@@ -30,6 +31,7 @@ class SnapList extends StatefulWidget {
     this.progressUpdate,
     this.positionUpdate,
     this.scrollStart,
+    this.verticalScrolling = false,
     this.snipDuration,
     this.snipCurve,
     this.alignment = Alignment.center,
@@ -60,6 +62,7 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
     bloc = SnapListBloc(
       itemsCount: widget.count,
       sizeProvider: widget.sizeProvider,
+      isVertical: widget.verticalScrolling,
       separatorProvider: widget.separatorProvider,
       swipeVelocity: widget.swipeVelocity
     );
@@ -71,7 +74,7 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
 
     bloc.positionStream.listen((event) {
       _updatePosition(event.newPosition);
-    });
+  });
 
     bloc.snipStartStream.listen((event) {
       _snipTween = Tween(begin: event.offset, end: event.targetOffset);
@@ -134,12 +137,21 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
           return _buildList(event.center, event.next, event.progress);
         }
 
-        return GestureDetector(
-          onHorizontalDragStart: _onHorizontalStart,
-          onHorizontalDragUpdate: _onHorizontalUpdate,
-          onHorizontalDragEnd: _onHorizontalEnd,
-          child: _buildList(event.center, event.next, event.progress),
-        );
+        if (widget.verticalScrolling) {
+          return GestureDetector(
+            onVerticalDragStart: _onVerticalStart,
+            onVerticalDragUpdate: _onVerticalUpdate,
+            onVerticalDragEnd: _onVerticalEnd,
+            child: _buildList(event.center, event.next, event.progress),
+          );
+        } else {
+          return GestureDetector(
+            onHorizontalDragStart: _onHorizontalStart,
+            onHorizontalDragUpdate: _onHorizontalUpdate,
+            onHorizontalDragEnd: _onHorizontalEnd,
+            child: _buildList(event.center, event.next, event.progress),
+          );
+        }
       },
     );
   }
@@ -148,15 +160,23 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
     return ListView.separated(
         key: _listKey,
         padding: widget.padding,
-        scrollDirection: Axis.horizontal,
+        scrollDirection: widget.verticalScrolling ? Axis.vertical : Axis.horizontal,
         physics: NeverScrollableScrollPhysics(),
         controller: _controller,
         separatorBuilder: (context, index) {
-          return SizedBox(
-            width: widget
-                .separatorProvider(index, BuilderData(center, next, progress))
-                .width,
-          );
+          if (widget.verticalScrolling) {
+            return SizedBox(
+              height: widget
+                  .separatorProvider(index, BuilderData(center, next, progress))
+                  .height,
+            );
+          } else {
+            return SizedBox(
+              width: widget
+                  .separatorProvider(index, BuilderData(center, next, progress))
+                  .width,
+            );
+          }
         },
         itemBuilder: (context, index) {
           final builderData = BuilderData(center, next, progress);
@@ -199,6 +219,24 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
   }
 
   void _onHorizontalEnd(DragEndDetails details) {
+    bloc.swipeEndSink.add(EndEvent(details.velocity.pixelsPerSecond));
+  }
+
+  void _onVerticalStart(DragStartDetails details) {
+    bloc.swipeStartSink
+        .add(StartEvent(_controller.offset, details.globalPosition.dy));
+
+    if (widget.scrollStart != null) {
+      widget.scrollStart();
+    }
+  }
+
+  void _onVerticalUpdate(DragUpdateDetails details) {
+    bloc.swipeUpdateSink
+        .add(UpdateEvent(details.globalPosition.dy, details.delta.dy));
+  }
+
+  void _onVerticalEnd(DragEndDetails details) {
     bloc.swipeEndSink.add(EndEvent(details.velocity.pixelsPerSecond));
   }
 

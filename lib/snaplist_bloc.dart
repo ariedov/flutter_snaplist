@@ -7,6 +7,7 @@ class SnapListBloc {
   final CardSizeProvider sizeProvider;
   final SeparatorSizeProvider separatorProvider;
   final double swipeVelocity;
+  final bool isVertical;
 
   int _itemsCount;
 
@@ -56,6 +57,7 @@ class SnapListBloc {
       {int itemsCount,
       this.sizeProvider,
       this.separatorProvider,
+      this.isVertical,
       this.swipeVelocity}) {
     _itemsCount = itemsCount ?? 0;
 
@@ -70,10 +72,10 @@ class SnapListBloc {
 
     _swipeUpdateController.stream.listen((event) {
       if (event.position < _startPosition) {
-        _direction = ScrollDirection.RIGHT;
+        _direction = isVertical ? ScrollDirection.DOWN : ScrollDirection.RIGHT;
         _nextItemPosition = _centerItemPosition + 1;
       } else {
-        _direction = ScrollDirection.LEFT;
+        _direction = isVertical ? ScrollDirection.UP : ScrollDirection.LEFT;
         _nextItemPosition = _centerItemPosition - 1;
       }
 
@@ -92,7 +94,7 @@ class SnapListBloc {
 
     _swipeEndController.stream.listen((event) {
       if (swipeVelocity != 0.0 &&
-          event.vector.dx.abs() <= swipeVelocity &&
+          (isVertical ? event.vector.dy.abs() : event.vector.dx.abs()) <= swipeVelocity &&
           _scrollProgress < 50) {
         _scrollProgress = 100 - _scrollProgress;
         _swipeNextAndCenter();
@@ -143,26 +145,41 @@ class SnapListBloc {
 
   _calculateScrollProgress(double currentPosition) {
     final distance = (_startPosition - currentPosition).abs();
-    return ((distance * 100) /
-            sizeProvider(_centerItemPosition, _createBuilderData()).width)
-        .clamp(0.0, 100.0);
+    double sizeFactor = isVertical ?
+      sizeProvider(_centerItemPosition, _createBuilderData()).height :
+      sizeProvider(_centerItemPosition, _createBuilderData()).width;
+    return ((distance * 100) / sizeFactor).clamp(0.0, 100.0);
   }
 
   double _calculateTargetOffset() {
     double result = 0.0;
 
     for (var i = 1; i <= _nextItemPosition; ++i) {
-      double cardWidth = sizeProvider(
-          i - 1,
-          BuilderData(
-            _centerItemPosition,
-            _nextItemPosition,
-            100.0,
-          )).width;
+      if (isVertical) {
+        double cardHeight = sizeProvider(
+            i - 1,
+            BuilderData(
+              _centerItemPosition,
+              _nextItemPosition,
+              100.0,
+            )).height;
 
-      result += cardWidth;
+        result += cardHeight;
 
-      result += separatorProvider(i - 1, _createBuilderData()).width;
+        result += separatorProvider(i - 1, _createBuilderData()).height;
+      } else {
+        double cardWidth = sizeProvider(
+            i - 1,
+            BuilderData(
+              _centerItemPosition,
+              _nextItemPosition,
+              100.0,
+            )).width;
+
+        result += cardWidth;
+
+        result += separatorProvider(i - 1, _createBuilderData()).width;
+      }
     }
     return result;
   }
@@ -194,4 +211,4 @@ class SnapListBloc {
   }
 }
 
-enum ScrollDirection { RIGHT, NONE, LEFT }
+enum ScrollDirection { RIGHT, NONE, LEFT, UP, DOWN }
