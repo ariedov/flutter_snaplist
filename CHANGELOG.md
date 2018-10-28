@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.5] - 28.10.2018
+
+* Implements vertical axis scroll and snip. A big thanks to [@raacker](https://github.com/raacker).
+
 ## [0.1.4] - 27.10.2018
 
 * Adds a simple example to the package

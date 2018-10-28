@@ -1,5 +1,6 @@
+import 'package:example/horziontal.dart';
+import 'package:example/vertical.dart';
 import 'package:flutter/material.dart';
-import 'package:snaplist/snaplist.dart';
 
 void main() => runApp(new MyApp());
 
@@ -35,21 +36,29 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final Size cardSize = Size(300.0, 460.0);
-    return Scaffold(
-      body: SnapList(
-        padding: EdgeInsets.only(
-            left: (MediaQuery.of(context).size.width - cardSize.width) / 2),
-        sizeProvider: (index, data) => cardSize,
-        separatorProvider: (index, data) => Size(10.0, 10.0),
-        builder: (context, index, data) {
-          return ClipRRect(
-            borderRadius: new BorderRadius.circular(16.0),
-            child: Image.network(urls[index], fit: BoxFit.fill,),
-          );
-        },
-        count: urls.length,
+    return DefaultTabController(
+      child: Scaffold(
+        appBar: AppBar(
+            title: Text("Snaplist demo"),
+            bottom: TabBar(tabs: <Widget>[
+              Tab(
+                text: "Horizontal",
+              ),
+              Tab(text: "Vertical")
+            ])),
+        body: TabBarView(
+          physics: NeverScrollableScrollPhysics(),
+          children: <Widget>[
+            HorizontalTab(
+              images: urls,
+            ),
+            VerticalTab(
+              images: urls,
+            )
+          ],
+        ),
       ),
+      length: 2,
     );
   }
 }
