@@ -1,6 +1,5 @@
-<a href="https://stackoverflow.com/questions/tagged/flutter?sort=votes">
-   <img alt="Awesome Flutter" src="https://img.shields.io/badge/Awesome-Flutter-blue.svg?longCache=true&style=flat-square" />
-</a>
+[![awesome flutter](https://img.shields.io/badge/Awesome-Flutter-blue.svg?longCache=true&style=flat-square)](https://stackoverflow.com/questions/tagged/flutter?sort=votes)
+[![pub package](https://img.shields.io/pub/v/snaplist.svg)](https://pub.dartlang.org/packages/snaplist)
 
 # snaplist
 
