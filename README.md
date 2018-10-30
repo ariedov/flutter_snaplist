@@ -44,6 +44,8 @@ Widget build(BuildContext context) {
 }
 ```
 
+Snaplist uses gesture detection for swiping the list, so, please, be sure that the gestures you apply to the widgets inside are not overlapping for best user experience.
+
 ## Properties
 
 There are 4 required fields:
