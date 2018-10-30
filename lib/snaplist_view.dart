@@ -74,7 +74,7 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
 
     bloc.positionStream.listen((event) {
       _updatePosition(event.newPosition);
-  });
+    });
 
     bloc.snipStartStream.listen((event) {
       _snipTween = Tween(begin: event.offset, end: event.targetOffset);
@@ -123,6 +123,13 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
     bloc.itemCountSink.add(widget.count);
 
     super.didUpdateWidget(oldWidget);
+    bloc.initializeField(
+      itemsCount: widget.count,
+      sizeProvider: widget.sizeProvider,
+      axis: widget.axis,
+      separatorProvider: widget.separatorProvider,
+      swipeVelocity: widget.swipeVelocity,
+    );
   }
 
   @override
@@ -136,7 +143,6 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
         if (isAnimating) {
           return _buildList(event.center, event.next, event.progress);
         }
-
         if (widget.axis == Axis.vertical) {
           return GestureDetector(
             onVerticalDragStart: _onVerticalStart,
