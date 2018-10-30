@@ -5,12 +5,11 @@ import 'package:snaplist/size_providers.dart';
 import 'package:snaplist/snaplist_events.dart';
 
 class SnapListBloc {
-  final CardSizeProvider sizeProvider;
-  final SeparatorSizeProvider separatorProvider;
-  final double swipeVelocity;
-  final Axis axis;
-
   int _itemsCount;
+  CardSizeProvider _sizeProvider;
+  SeparatorSizeProvider _separatorProvider;
+  double _swipeVelocity;
+  Axis _axis;
 
   int _centerItemPosition = 0;
   int _nextItemPosition = -1;
@@ -21,7 +20,7 @@ class SnapListBloc {
   double _scrollProgress;
 
   ScrollDirection _direction = ScrollDirection.NONE;
-  bool get _isVertical => axis == Axis.vertical;
+  bool get _isVertical => _axis == Axis.vertical;
 
   StreamController<StartEvent> _swipeStartController = StreamController();
   Sink<StartEvent> get swipeStartSink => _swipeStartController.sink;
@@ -57,11 +56,18 @@ class SnapListBloc {
 
   SnapListBloc(
       {int itemsCount,
-      this.sizeProvider,
-      this.separatorProvider,
-      this.axis,
-      this.swipeVelocity}) {
-    _itemsCount = itemsCount ?? 0;
+      sizeProvider,
+      separatorProvider,
+      axis,
+      swipeVelocity}) {
+
+    initializeField(
+      itemsCount: itemsCount,
+      sizeProvider: sizeProvider,
+      axis: axis,
+      separatorProvider: separatorProvider,
+      swipeVelocity: swipeVelocity,
+    );
 
     _swipeStartController.stream.listen((event) {
       _direction = ScrollDirection.NONE;
@@ -81,7 +87,7 @@ class SnapListBloc {
         _nextItemPosition = _centerItemPosition - 1;
       }
 
-      if (_nextItemPosition < 0 || _nextItemPosition >= itemsCount) {
+      if (_nextItemPosition < 0 || _nextItemPosition >= _itemsCount) {
         return;
       }
 
@@ -95,8 +101,8 @@ class SnapListBloc {
     });
 
     _swipeEndController.stream.listen((event) {
-      if (swipeVelocity != 0.0 &&
-          swipeVelocity >=
+      if (_swipeVelocity != 0.0 &&
+          _swipeVelocity >=
               (_isVertical ? event.vector.dy.abs() : event.vector.dx.abs()) &&
           _scrollProgress < 50) {
         _scrollProgress = 100 - _scrollProgress;
@@ -140,6 +146,23 @@ class SnapListBloc {
     });
   }
 
+  initializeField({
+    itemsCount,
+    sizeProvider,
+    separatorProvider,
+    axis,
+    swipeVelocity
+  }) {
+    _itemsCount = itemsCount ?? 0;
+    _sizeProvider = sizeProvider;
+    _separatorProvider = separatorProvider;
+    _axis = axis;
+    _swipeVelocity = swipeVelocity;
+
+    _uiController.add(
+        UiEvent(_centerItemPosition, _nextItemPosition, 0));
+  }
+
   _swipeNextAndCenter() {
     final tmp = _centerItemPosition;
     _centerItemPosition = _nextItemPosition;
@@ -148,7 +171,7 @@ class SnapListBloc {
 
   _calculateScrollProgress(double currentPosition) {
     final distance = (_startPosition - currentPosition).abs();
-    Size cardSize = sizeProvider(_centerItemPosition, _createBuilderData());
+    Size cardSize = _sizeProvider(_centerItemPosition, _createBuilderData());
     return ((distance * 100) / (_isVertical ? cardSize.height : cardSize.width))
         .clamp(0.0, 100.0);
   }
@@ -157,14 +180,14 @@ class SnapListBloc {
     double result = 0.0;
 
     for (var i = 1; i <= _nextItemPosition; ++i) {
-      Size cardSize = sizeProvider(
+      Size cardSize = _sizeProvider(
         i - 1,
         BuilderData(
         _centerItemPosition,
         _nextItemPosition,
         100.0,
       ));
-      Size separatorSize = separatorProvider(i - 1, _createBuilderData());
+      Size separatorSize = _separatorProvider(i - 1, _createBuilderData());
 
       if (_isVertical) {
         result += cardSize.height;
