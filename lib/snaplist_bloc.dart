@@ -55,12 +55,7 @@ class SnapListBloc {
   Stream<UiEvent> get uiStream => _uiController.stream;
 
   SnapListBloc(
-      {int itemsCount,
-      sizeProvider,
-      separatorProvider,
-      axis,
-      swipeVelocity}) {
-
+      {int itemsCount, sizeProvider, separatorProvider, axis, swipeVelocity}) {
     initializeField(
       itemsCount: itemsCount,
       sizeProvider: sizeProvider,
@@ -146,21 +141,13 @@ class SnapListBloc {
     });
   }
 
-  initializeField({
-    itemsCount,
-    sizeProvider,
-    separatorProvider,
-    axis,
-    swipeVelocity
-  }) {
+  initializeField(
+      {itemsCount, sizeProvider, separatorProvider, axis, swipeVelocity}) {
     _itemsCount = itemsCount ?? 0;
     _sizeProvider = sizeProvider;
     _separatorProvider = separatorProvider;
     _axis = axis;
     _swipeVelocity = swipeVelocity;
-
-    _uiController.add(
-        UiEvent(_centerItemPosition, _nextItemPosition, 0));
   }
 
   _swipeNextAndCenter() {
@@ -181,12 +168,12 @@ class SnapListBloc {
 
     for (var i = 1; i <= _nextItemPosition; ++i) {
       Size cardSize = _sizeProvider(
-        i - 1,
-        BuilderData(
-        _centerItemPosition,
-        _nextItemPosition,
-        100.0,
-      ));
+          i - 1,
+          BuilderData(
+            _centerItemPosition,
+            _nextItemPosition,
+            100.0,
+          ));
       Size separatorSize = _separatorProvider(i - 1, _createBuilderData());
 
       if (_isVertical) {
