@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.6] - 31.10.2018
+
+* Hot reload did nothing to snaplist. Now it is fixed. A big thanks to [@raacker](https://github.com/raacker).
+
 ## [0.1.5] - 28.10.2018
 
 * Implements vertical axis scroll and snip. A big thanks to [@raacker](https://github.com/raacker).
