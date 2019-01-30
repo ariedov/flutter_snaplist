@@ -3,8 +3,9 @@ import 'package:snaplist/snaplist.dart';
 
 class VerticalTab extends StatelessWidget {
   final List<String> images;
+  final VoidCallback loadMore;
 
-  const VerticalTab({Key key, this.images}) : super(key: key);
+  const VerticalTab({Key key, this.images, this.loadMore}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +15,11 @@ class VerticalTab extends StatelessWidget {
           top: (MediaQuery.of(context).size.height - 180 - cardSize.height) / 2),
       sizeProvider: (index, data) => cardSize,
       separatorProvider: (index, data) => Size(50.0, 50.0),
+      positionUpdate: (int index){
+        if(index==images.length-1){
+          loadMore();
+        }
+      },
       builder: (context, index, data) {
         return ClipOval(
           child: Image.network(

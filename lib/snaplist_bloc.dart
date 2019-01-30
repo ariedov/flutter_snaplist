@@ -132,7 +132,7 @@ class SnapListBloc {
     });
 
     _itemCountController.stream.listen((itemCount) {
-      _itemsCount = itemsCount;
+      _itemsCount = itemCount;
 
       if (_centerItemPosition >= _itemsCount - 1) {
         _centerItemPosition = _itemsCount - 1;
