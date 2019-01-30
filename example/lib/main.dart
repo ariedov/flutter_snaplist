@@ -23,7 +23,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<String> urls = [
+  List<String> urls = [
     "https://image.tmdb.org/t/p/w370_and_h556_bestv2/2uNW4WbgBXL25BAbXGLnLqX71Sw.jpg",
     "https://image.tmdb.org/t/p/w370_and_h556_bestv2/lNkDYKmrVem1J0aAfCnQlJOCKnT.jpg",
     "https://image.tmdb.org/t/p/w370_and_h556_bestv2/wrFpXMNBRj2PBiN4Z5kix51XaIZ.jpg",
@@ -50,15 +50,19 @@ class _MyHomePageState extends State<MyHomePage> {
           physics: NeverScrollableScrollPhysics(),
           children: <Widget>[
             HorizontalTab(
-              images: urls,
+              images: urls, loadMore: _loadMoreItems,
             ),
-            VerticalTab(
-              images: urls,
-            )
+            VerticalTab(images: urls, loadMore: _loadMoreItems)
           ],
         ),
       ),
       length: 2,
     );
+  }
+
+  void _loadMoreItems() {
+    setState(() {
+      urls = new List.from(urls)..addAll(urls);
+    });
   }
 }
