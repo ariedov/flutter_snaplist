@@ -19,7 +19,7 @@ In your `pubspec.yaml` root add:
 
 ```yaml
 dependencies:
-  snaplist: ^0.1.6
+  snaplist: ^0.1.7
 ```
 
 ## Include

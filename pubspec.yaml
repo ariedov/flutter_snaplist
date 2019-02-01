@@ -1,6 +1,6 @@
 name: snaplist
 description: A small library that allows to create lists with snapping to item.
-version: 0.1.6
+version: 0.1.7
 author: David Leibovych <ariedov@gmail.com>
 homepage: https://github.com/ariedov/flutter_snaplist
 
