@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:snaplist/size_providers.dart';
 import 'package:snaplist/snaplist_bloc.dart';
+import 'package:snaplist/snaplist_controller.dart';
 import 'package:snaplist/snaplist_events.dart';
 
 class SnapList extends StatefulWidget {
@@ -21,6 +22,8 @@ class SnapList extends StatefulWidget {
   final Alignment alignment;
   final double swipeVelocity;
 
+  final SnaplistController snaplistController;
+
   SnapList({
     Key key,
     @required this.sizeProvider,
@@ -36,6 +39,7 @@ class SnapList extends StatefulWidget {
     this.snipCurve,
     this.alignment = Alignment.center,
     this.swipeVelocity = 0.0,
+    this.snaplistController,
   }) : super(key: key) {
     assert(this.sizeProvider != null);
     assert(this.builder != null);
@@ -83,14 +87,18 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
       _snipController.forward(from: 0.0);
     });
 
+    bloc.explicitPositionChangeStream.listen((offset) {
+      print("new offset: $offset");
+      _controller.jumpTo(offset);
+    });
+
     _snipController = AnimationController(
         vsync: this,
         duration: widget.snipDuration ?? Duration(milliseconds: 300))
       ..addListener(() {
         Animation resultAnimation = _snipController;
         if (widget.snipCurve != null) {
-          resultAnimation =
-              CurvedAnimation(parent: _snipController, curve: widget.snipCurve);
+          resultAnimation =              CurvedAnimation(parent: _snipController, curve: widget.snipCurve);
         }
         final scrollProgress = _progressTween.evaluate(resultAnimation);
         final snip = _snipTween.evaluate(resultAnimation);
@@ -101,6 +109,10 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
           bloc.snipFinishSink.add(SnipFinishEvent());
         }
       });
+
+    widget.snaplistController?.positionChanged = (position) {
+      bloc.explicitPositionChangeSink.add(position);
+    };
 
     super.initState();
   }
@@ -130,6 +142,10 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
       separatorProvider: widget.separatorProvider,
       swipeVelocity: widget.swipeVelocity,
     );
+
+    widget.snaplistController?.positionChanged = (position) {
+      bloc.explicitPositionChangeSink.add(position);
+    };
   }
 
   @override

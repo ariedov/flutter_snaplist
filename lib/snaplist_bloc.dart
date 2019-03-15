@@ -45,6 +45,12 @@ class SnapListBloc {
   Stream<PositionChangeEvent> get positionStream =>
       _positionChangeController.stream;
 
+  StreamController<int> _explicitPositionChangeController = StreamController();
+  Sink<int> get explicitPositionChangeSink => _explicitPositionChangeController.sink;
+
+  StreamController<double> _explicitPositionChangeStream = StreamController();
+  Stream<double> get explicitPositionChangeStream => _explicitPositionChangeStream.stream;
+
   StreamController<OffsetEvent> _offsetController = StreamController();
   Stream<OffsetEvent> get offsetStream => _offsetController.stream;
 
@@ -131,6 +137,16 @@ class SnapListBloc {
       _positionChangeController.add(PositionChangeEvent(_centerItemPosition));
     });
 
+    _explicitPositionChangeController.stream.listen((position) {
+      _nextItemPosition = position.clamp(0, _itemsCount - 1);
+      _scrollProgress = 0.0;
+
+      _explicitPositionChangeStream.add(_calculateTargetOffset());
+
+      _centerItemPosition =_nextItemPosition;
+      _nextItemPosition = -1;
+    });
+
     _itemCountController.stream.listen((itemCount) {
       _itemsCount = itemCount;
 
@@ -209,6 +225,9 @@ class SnapListBloc {
 
     _positionChangeController.close();
     _offsetController.close();
+
+    _explicitPositionChangeController.close();
+    _explicitPositionChangeStream.close();
 
     _uiController.close();
   }

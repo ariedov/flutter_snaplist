@@ -29,4 +29,16 @@ void main() {
 
     bloc.snipFinishSink.add(SnipFinishEvent());
   });
+
+  test("explicit item set test", () {
+    final bloc = SnapListBloc(
+        itemsCount: 10,
+        separatorProvider: (index, data) => Size(10.0, 10.0),
+        sizeProvider: (index, data) => Size(50.0, 50.0),
+        swipeVelocity: 0.0);
+
+    expect(bloc.explicitPositionChangeStream, emits(180));
+
+    bloc.explicitPositionChangeSink.add(3);
+  });
 }

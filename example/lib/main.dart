@@ -1,3 +1,4 @@
+import 'package:example/horizontal_explicit.dart';
 import 'package:example/horziontal.dart';
 import 'package:example/vertical.dart';
 import 'package:flutter/material.dart';
@@ -44,19 +45,24 @@ class _MyHomePageState extends State<MyHomePage> {
               Tab(
                 text: "Horizontal",
               ),
+              Tab(
+                text: "Explicit",
+              ),
               Tab(text: "Vertical")
             ])),
         body: TabBarView(
           physics: NeverScrollableScrollPhysics(),
-          children: <Widget>[
-            HorizontalTab(
+          children: <Widget>[            HorizontalTab(
+              images: urls, loadMore: _loadMoreItems,
+            ),
+            HorizontalExplicitTab(
               images: urls, loadMore: _loadMoreItems,
             ),
             VerticalTab(images: urls, loadMore: _loadMoreItems)
           ],
         ),
       ),
-      length: 2,
+      length: 3
     );
   }
 
