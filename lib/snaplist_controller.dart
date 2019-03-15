@@ -5,8 +5,8 @@ class SnaplistController {
   PositionChanged positionChanged;
 
   SnaplistController({
-    this.initialPosition = 0
-    });
+    this.initialPosition
+  });
 
   setPosition(int position) {
     if (positionChanged != null) {

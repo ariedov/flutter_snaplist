@@ -46,10 +46,12 @@ class SnapListBloc {
       _positionChangeController.stream;
 
   StreamController<int> _explicitPositionChangeController = StreamController();
-  Sink<int> get explicitPositionChangeSink => _explicitPositionChangeController.sink;
+  Sink<int> get explicitPositionChangeSink =>
+      _explicitPositionChangeController.sink;
 
   StreamController<double> _explicitPositionChangeStream = StreamController();
-  Stream<double> get explicitPositionChangeStream => _explicitPositionChangeStream.stream;
+  Stream<double> get explicitPositionChangeStream =>
+      _explicitPositionChangeStream.stream;
 
   StreamController<OffsetEvent> _offsetController = StreamController();
   Stream<OffsetEvent> get offsetStream => _offsetController.stream;
@@ -143,7 +145,7 @@ class SnapListBloc {
 
       _explicitPositionChangeStream.add(_calculateTargetOffset());
 
-      _centerItemPosition =_nextItemPosition;
+      _centerItemPosition = _nextItemPosition;
       _nextItemPosition = -1;
     });
 
@@ -180,27 +182,8 @@ class SnapListBloc {
   }
 
   double _calculateTargetOffset() {
-    double result = 0.0;
-
-    for (var i = 1; i <= _nextItemPosition; ++i) {
-      Size cardSize = _sizeProvider(
-          i - 1,
-          BuilderData(
-            _centerItemPosition,
-            _nextItemPosition,
-            100.0,
-          ));
-      Size separatorSize = _separatorProvider(i - 1, _createBuilderData());
-
-      if (_isVertical) {
-        result += cardSize.height;
-        result += separatorSize.height;
-      } else {
-        result += cardSize.width;
-        result += separatorSize.width;
-      }
-    }
-    return result;
+    return calculateTargetOffset(
+      _centerItemPosition, _nextItemPosition, _isVertical, _sizeProvider, _separatorProvider, _createBuilderData());
   }
 
   _createBuilderData() {
@@ -231,6 +214,36 @@ class SnapListBloc {
 
     _uiController.close();
   }
+}
+
+double calculateTargetOffset(
+    int currentItem,
+    int calculateTo,
+    bool isVertical,
+    CardSizeProvider sizeProvider,
+    SeparatorSizeProvider separatorSizeProvider,
+    BuilderData builderData) {
+  double result = 0.0;
+
+  for (var i = 1; i <= calculateTo; ++i) {
+    Size cardSize = sizeProvider(
+        i - 1,
+        BuilderData(
+          currentItem,
+          calculateTo,
+          100.0,
+        ));
+    Size separatorSize = separatorSizeProvider(i - 1, builderData);
+
+    if (isVertical) {
+      result += cardSize.height;
+      result += separatorSize.height;
+    } else {
+      result += cardSize.width;
+      result += separatorSize.width;
+    }
+  }
+  return result;
 }
 
 enum ScrollDirection { RIGHT, NONE, LEFT, UP, DOWN }

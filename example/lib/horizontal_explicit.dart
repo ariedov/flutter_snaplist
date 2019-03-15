@@ -15,7 +15,7 @@ class HorizontalExplicitTab extends StatelessWidget {
     final Size cardSize = Size(300.0, 460.0);
 
     final random = new Random();
-    final controller = SnaplistController();
+    final controller = SnaplistController(initialPosition: 2);
     return Stack(
       children: <Widget>[
         SnapList(

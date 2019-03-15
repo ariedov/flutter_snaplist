@@ -114,6 +114,10 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
       bloc.explicitPositionChangeSink.add(position);
     };
 
+    if (widget.snaplistController?.initialPosition != null) {
+      bloc.explicitPositionChangeSink.add(widget.snaplistController.initialPosition);
+    }
+
     super.initState();
   }
 
