@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.8] - 16.03.2019
+
+* Introducing `SnaplistController` to allow initial item position and setting position programatically.
+
 ## [0.1.7] - 01.02.2019
 
 * Hot reload did nothing to snaplist. Now it is fixed. A big thanks to [@raacker](https://github.com/raacker).
