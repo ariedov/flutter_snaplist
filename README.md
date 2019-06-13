@@ -36,8 +36,8 @@ Use it as you'd use any widget:
 ```dart
 Widget build(BuildContext context) {
   return SnapList(
-    sizeProvider => (index, data) => Size(100.0, 100.0),
-    separatorProvider => (index, data) => Size(10.0, 10.0),
+    sizeProvider: (index, data) => Size(100.0, 100.0),
+    separatorProvider: (index, data) => Size(10.0, 10.0),
     builder: (context, index, data) => SizedBox(),
     count: 1,
   );
