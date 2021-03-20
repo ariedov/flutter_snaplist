@@ -41,7 +41,8 @@ class PositionChangeMatcher extends Matcher {
   PositionChangeMatcher(this.expected);
 
   @override
-  Description describe(Description description) => description.add("did not match");
+  Description describe(Description description) =>
+      description.add("did not match");
 
   @override
   bool matches(item, Map matchState) {

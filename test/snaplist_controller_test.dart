@@ -1,14 +1,13 @@
+import 'package:flutter_test/flutter_test.dart';
+
 import 'package:snaplist/snaplist_controller.dart';
-import 'package:test_api/test_api.dart';
 
 void main() {
   test("position change test", () {
     var position;
 
     final controller = SnaplistController();
-    controller.positionChanged = (newPosition) => {
-      position = newPosition
-    };
+    controller.positionChanged = (newPosition) => {position = newPosition};
 
     controller.setPosition(1);
 
@@ -19,9 +18,7 @@ void main() {
     var position = [];
 
     final controller = SnaplistController();
-    controller.positionChanged = (newPosition) => {
-      position.add(newPosition)
-    };
+    controller.positionChanged = (newPosition) => {position.add(newPosition)};
 
     controller.setPosition(1);
     controller.setPosition(2);
