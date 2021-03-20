@@ -5,21 +5,21 @@ import 'package:snaplist/size_providers.dart';
 import 'package:snaplist/snaplist_events.dart';
 
 class SnapListBloc {
-  int _itemsCount;
-  CardSizeProvider _sizeProvider;
-  SeparatorSizeProvider _separatorProvider;
-  double _swipeVelocity;
-  Axis _axis;
+  late int _itemsCount;
+  CardSizeProvider? _sizeProvider;
+  SeparatorSizeProvider? _separatorProvider;
+  double? _swipeVelocity;
+  Axis? _axis;
 
   int _centerItemPosition = 0;
   int _nextItemPosition = -1;
 
-  double _scrollOffset;
-  double _startPosition;
+  double? _scrollOffset;
+  late double _startPosition;
 
-  double _scrollProgress;
+  double? _scrollProgress;
 
-  ScrollDirection _direction = ScrollDirection.NONE;
+  ScrollDirection? _direction = ScrollDirection.NONE;
   bool get _isVertical => _axis == Axis.vertical;
 
   StreamController<StartEvent> _swipeStartController = StreamController();
@@ -45,8 +45,8 @@ class SnapListBloc {
   Stream<PositionChangeEvent> get positionStream =>
       _positionChangeController.stream;
 
-  StreamController<int> _explicitPositionChangeController = StreamController();
-  Sink<int> get explicitPositionChangeSink =>
+  StreamController<int?> _explicitPositionChangeController = StreamController();
+  Sink<int?> get explicitPositionChangeSink =>
       _explicitPositionChangeController.sink;
 
   StreamController<double> _explicitPositionChangeStream = StreamController();
@@ -63,7 +63,7 @@ class SnapListBloc {
   Stream<UiEvent> get uiStream => _uiController.stream;
 
   SnapListBloc(
-      {int itemsCount, sizeProvider, separatorProvider, axis, swipeVelocity}) {
+      {int? itemsCount, sizeProvider, separatorProvider, axis, swipeVelocity}) {
     initializeField(
       itemsCount: itemsCount,
       sizeProvider: sizeProvider,
@@ -94,7 +94,7 @@ class SnapListBloc {
         return;
       }
 
-      _scrollOffset = _scrollOffset - event.delta;
+      _scrollOffset = _scrollOffset! - event.delta;
       _scrollProgress = _calculateScrollProgress(event.position);
       _offsetController.add(OffsetEvent(_scrollOffset, _scrollProgress,
           _centerItemPosition, _nextItemPosition));
@@ -105,10 +105,10 @@ class SnapListBloc {
 
     _swipeEndController.stream.listen((event) {
       if (_swipeVelocity != 0.0 &&
-          _swipeVelocity >=
+          _swipeVelocity! >=
               (_isVertical ? event.vector.dy.abs() : event.vector.dx.abs()) &&
-          _scrollProgress < 50) {
-        _scrollProgress = 100 - _scrollProgress;
+          _scrollProgress! < 50) {
+        _scrollProgress = 100 - _scrollProgress!;
         _swipeNextAndCenter();
         _direction = ScrollDirection.NONE;
       }
@@ -140,7 +140,7 @@ class SnapListBloc {
     });
 
     _explicitPositionChangeController.stream.listen((position) {
-      _nextItemPosition = position.clamp(0, _itemsCount - 1);
+      _nextItemPosition = position!.clamp(0, _itemsCount - 1);
       _scrollProgress = 0.0;
 
       _explicitPositionChangeStream.add(_calculateTargetOffset());
@@ -176,14 +176,14 @@ class SnapListBloc {
 
   _calculateScrollProgress(double currentPosition) {
     final distance = (_startPosition - currentPosition).abs();
-    Size cardSize = _sizeProvider(_centerItemPosition, _createBuilderData());
+    Size cardSize = _sizeProvider!(_centerItemPosition, _createBuilderData());
     return ((distance * 100) / (_isVertical ? cardSize.height : cardSize.width))
         .clamp(0.0, 100.0);
   }
 
   double _calculateTargetOffset() {
-    return calculateTargetOffset(
-      _centerItemPosition, _nextItemPosition, _isVertical, _sizeProvider, _separatorProvider, _createBuilderData());
+    return calculateTargetOffset(_centerItemPosition, _nextItemPosition,
+        _isVertical, _sizeProvider, _separatorProvider, _createBuilderData());
   }
 
   _createBuilderData() {
@@ -220,20 +220,20 @@ double calculateTargetOffset(
     int currentItem,
     int calculateTo,
     bool isVertical,
-    CardSizeProvider sizeProvider,
-    SeparatorSizeProvider separatorSizeProvider,
+    CardSizeProvider? sizeProvider,
+    SeparatorSizeProvider? separatorSizeProvider,
     BuilderData builderData) {
   double result = 0.0;
 
   for (var i = 1; i <= calculateTo; ++i) {
-    Size cardSize = sizeProvider(
+    Size cardSize = sizeProvider!(
         i - 1,
         BuilderData(
           currentItem,
           calculateTo,
           100.0,
         ));
-    Size separatorSize = separatorSizeProvider(i - 1, builderData);
+    Size separatorSize = separatorSizeProvider!(i - 1, builderData);
 
     if (isVertical) {
       result += cardSize.height;

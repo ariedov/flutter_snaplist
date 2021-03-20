@@ -10,26 +10,26 @@ class SnapList extends StatefulWidget {
   final CardBuilder builder;
   final int count;
 
-  final ScrollProgressUpdate progressUpdate;
-  final PositionUpdate positionUpdate;
-  final ScrollStart scrollStart;
+  final ScrollProgressUpdate? progressUpdate;
+  final PositionUpdate? positionUpdate;
+  final ScrollStart? scrollStart;
   final Axis axis;
 
-  final Duration snipDuration;
-  final Curve snipCurve;
+  final Duration? snipDuration;
+  final Curve? snipCurve;
 
-  final EdgeInsets padding;
+  final EdgeInsets? padding;
   final Alignment alignment;
   final double swipeVelocity;
 
-  final SnaplistController snaplistController;
+  final SnaplistController? snaplistController;
 
   SnapList({
-    Key key,
-    @required this.sizeProvider,
-    @required this.builder,
-    @required this.separatorProvider,
-    @required this.count,
+    Key? key,
+    required this.sizeProvider,
+    required this.builder,
+    required this.separatorProvider,
+    required this.count,
     this.padding,
     this.progressUpdate,
     this.positionUpdate,
@@ -40,12 +40,7 @@ class SnapList extends StatefulWidget {
     this.alignment = Alignment.center,
     this.swipeVelocity = 0.0,
     this.snaplistController,
-  }) : super(key: key) {
-    assert(this.sizeProvider != null);
-    assert(this.builder != null);
-    assert(this.separatorProvider != null);
-    assert(this.count != null);
-  }
+  });
 
   @override
   State<StatefulWidget> createState() => _SnapListState();
@@ -55,24 +50,23 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
   GlobalKey _listKey = GlobalKey();
   ScrollController _controller = ScrollController();
 
-  SnapListBloc bloc;
+  late SnapListBloc bloc;
 
-  AnimationController _snipController;
+  AnimationController? _snipController;
   Tween<double> _progressTween = Tween<double>();
   Tween<double> _snipTween = Tween<double>();
 
   @override
   void initState() {
     bloc = SnapListBloc(
-      itemsCount: widget.count,
-      sizeProvider: widget.sizeProvider,
-      axis: widget.axis,
-      separatorProvider: widget.separatorProvider,
-      swipeVelocity: widget.swipeVelocity
-    );
+        itemsCount: widget.count,
+        sizeProvider: widget.sizeProvider,
+        axis: widget.axis,
+        separatorProvider: widget.separatorProvider,
+        swipeVelocity: widget.swipeVelocity);
 
     bloc.offsetStream.listen((event) {
-      _controller.jumpTo(event.offset);
+      _controller.jumpTo(event.offset!);
       _updateProgress(event.progress, event.centerPosition, event.nextPosition);
     });
 
@@ -84,7 +78,7 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
       _snipTween = Tween(begin: event.offset, end: event.targetOffset);
       _progressTween = Tween(begin: event.progress, end: 100.0);
 
-      _snipController.forward(from: 0.0);
+      _snipController!.forward(from: 0.0);
     });
 
     bloc.explicitPositionChangeStream.listen((offset) {
@@ -96,11 +90,13 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
         vsync: this,
         duration: widget.snipDuration ?? Duration(milliseconds: 300))
       ..addListener(() {
-        Animation resultAnimation = _snipController;
+        Animation? resultAnimation = _snipController;
         if (widget.snipCurve != null) {
-          resultAnimation =              CurvedAnimation(parent: _snipController, curve: widget.snipCurve);
+          resultAnimation = CurvedAnimation(
+              parent: _snipController!, curve: widget.snipCurve!);
         }
-        final scrollProgress = _progressTween.evaluate(resultAnimation);
+        final scrollProgress =
+            _progressTween.evaluate(resultAnimation as Animation<double>);
         final snip = _snipTween.evaluate(resultAnimation);
         bloc.snipUpdateSink.add(SnipUpdateEvent(snip, scrollProgress));
       })
@@ -115,22 +111,23 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
     };
 
     if (widget.snaplistController?.initialPosition != null) {
-      bloc.explicitPositionChangeSink.add(widget.snaplistController.initialPosition);
+      bloc.explicitPositionChangeSink
+          .add(widget.snaplistController!.initialPosition);
     }
 
     super.initState();
   }
 
   _updateProgress(
-      double progress, int centerItemPosition, int nextItemPosition) {
+      double? progress, int centerItemPosition, int nextItemPosition) {
     if (widget.progressUpdate != null) {
-      widget.progressUpdate(progress, centerItemPosition, nextItemPosition);
+      widget.progressUpdate!(progress, centerItemPosition, nextItemPosition);
     }
   }
 
   _updatePosition(int newPosition) {
     if (widget.positionUpdate != null) {
-      widget.positionUpdate(newPosition);
+      widget.positionUpdate!(newPosition);
     }
   }
 
@@ -158,31 +155,31 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
       initialData: UiEvent(0, -1, 0.0),
       stream: bloc.uiStream,
       builder: (context, snapshot) {
-        UiEvent event = snapshot.data;
+        UiEvent? event = snapshot.data;
 
         if (isAnimating) {
-          return _buildList(event.center, event.next, event.progress);
+          return _buildList(event!.center, event.next, event.progress);
         }
         if (widget.axis == Axis.vertical) {
           return GestureDetector(
             onVerticalDragStart: _onVerticalStart,
             onVerticalDragUpdate: _onVerticalUpdate,
             onVerticalDragEnd: _onVerticalEnd,
-            child: _buildList(event.center, event.next, event.progress),
+            child: _buildList(event!.center, event.next, event.progress),
           );
         } else {
           return GestureDetector(
             onHorizontalDragStart: _onHorizontalStart,
             onHorizontalDragUpdate: _onHorizontalUpdate,
             onHorizontalDragEnd: _onHorizontalEnd,
-            child: _buildList(event.center, event.next, event.progress),
+            child: _buildList(event!.center, event.next, event.progress),
           );
         }
       },
     );
   }
 
-  _buildList(int center, int next, double progress) {
+  _buildList(int center, int next, double? progress) {
     return ListView.separated(
         key: _listKey,
         padding: widget.padding,
@@ -226,7 +223,7 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
   void dispose() {
     bloc.dispose();
     _controller.dispose();
-    _snipController.dispose();
+    _snipController!.dispose();
     super.dispose();
   }
 
@@ -235,7 +232,7 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
         .add(StartEvent(_controller.offset, details.globalPosition.dx));
 
     if (widget.scrollStart != null) {
-      widget.scrollStart();
+      widget.scrollStart!();
     }
   }
 
@@ -253,7 +250,7 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
         .add(StartEvent(_controller.offset, details.globalPosition.dy));
 
     if (widget.scrollStart != null) {
-      widget.scrollStart();
+      widget.scrollStart!();
     }
   }
 
@@ -266,7 +263,7 @@ class _SnapListState extends State<SnapList> with TickerProviderStateMixin {
     bloc.swipeEndSink.add(EndEvent(details.velocity.pixelsPerSecond));
   }
 
-  bool get isAnimating => _snipController.isAnimating;
+  bool get isAnimating => _snipController!.isAnimating;
 }
 
 typedef Widget CardBuilder(
@@ -276,5 +273,5 @@ typedef Widget CardBuilder(
 );
 
 typedef ScrollStart();
-typedef void ScrollProgressUpdate(double progress, int center, int next);
+typedef void ScrollProgressUpdate(double? progress, int center, int next);
 typedef void PositionUpdate(int center);
